@@ -5,6 +5,14 @@ as nossas páginas web.*/
 
 const express = require('express')();
 
+/* Para manipular as ações da nossa conta PagSeguro devemos
+importar a classe criada no arquivo account.js criado na
+pasta controllers. */
+const account = require('./controllers/account.js');
+
+/* Antes de realizarmos qualquer ação devemos autenticar a nossa conta
+PagSeguro para que seja possível criar e manipular os planos. */
+account.authentication();
 
 /* A chamada express.get sempre será usada quando quisermos chamar 
 uma nova rota de acesso GET á um determinado endereço da nossa
@@ -20,7 +28,6 @@ Usando res.send() enviamos uma resposta para o cliente.*/
 express.get('/', (req, res) => {
     res.send('Hello World');
 });
-
 
 /* Faz com que os servidor fique escutando requisições HTTP através
 da porta indicada pelo serviço de deployment que iremos utilizar

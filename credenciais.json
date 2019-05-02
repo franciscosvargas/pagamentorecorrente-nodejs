@@ -1,0 +1,6 @@
+{
+    "email": "INSIRA AQUI O EMAIL DA SUA CONTA PAGSEGURO",
+    "token_sandbox": "INSIRA AQUI O SEU TOKEN SANDBOX (VERSÃO DE TESTE)",
+    "sandbox_auth": "https://ws.sandbox.pagseguro.uol.com.br/",
+    "url_endpoint": "application/x-www-form-urlencoded;charset=ISO-8859-1"
+}
