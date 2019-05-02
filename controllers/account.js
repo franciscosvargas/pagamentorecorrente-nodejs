@@ -38,7 +38,7 @@ class accountController {
 		com o resultado da conexão. */
 		request(options, function (error, response, body) {
 			if (error) throw new Error(error);
-			console.log(body);
+			console.log("\nUsuário autenticado com sucesso!");
 		});
 	}
 }

@@ -1,0 +1,145 @@
+<!-- 
+	Página inicial da apliacação, esta página exibe os planos cadastrados
+	em nossa conta PagSeguro.
+ -->
+
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<style type="text/css">
+		html {
+			height: 100%;
+			font-family: 'Open Sans', sans-serif;
+		}
+
+		body {
+			background-color: #F8F8FF;
+			width: 100%;
+			height: (100% - 80px);
+			margin: 0;
+
+		}
+
+		.cabecalho {
+			background-color: #FF3CAC;
+			background-image: linear-gradient(225deg, #FF3CAC 0%, #784BA0 50%, #2B86C5 100%);
+			width: 100%;
+			height: 80px;
+			display: flex;
+			color: white;
+			font-size: 15px;
+			justify-content: center;
+			align-content: center;
+			-webkit-box-shadow: 2px 10px 32px -6px rgba(0, 0, 0, 0.75);
+			-moz-box-shadow: 2px 10px 32px -6px rgba(0, 0, 0, 0.75);
+			box-shadow: 2px 10px 32px -6px rgba(0, 0, 0, 0.75);
+		}
+
+		.container-plans {
+			margin-top: 40px;
+			display: flex;
+			justify-content: center;
+			align-content: center;
+		}
+
+		.plan {
+			margin-left: 20px;
+			background-color: #8EC5FC;
+			background-image: linear-gradient(62deg, #8EC5FC 0%, #E0C3FC 100%);
+			border-radius: 20px;
+			width: 260px;
+			height: 400px;
+			display: flex;
+			justify-content: center;
+			align-content: center;
+			flex-direction: column;
+			-webkit-box-shadow: 2px 10px 32px -6px rgba(0, 0, 0, 0.75);
+			-moz-box-shadow: 2px 10px 32px -6px rgba(0, 0, 0, 0.75);
+			box-shadow: 2px 10px 32px -6px rgba(0, 0, 0, 0.75);
+		}
+
+		.plan h2 {
+			color: rgb(31, 30, 30);
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.plan p {
+			color: rgb(31, 30, 30);
+			margin-left: auto;
+			margin-right: auto;
+			padding: 0 10px 0 10px;
+			text-align: center;
+		}
+
+		.plan h3 {
+			color: green;
+			margin-left: auto;
+			margin-right: auto;
+		}
+
+		.plan button {
+			margin: 0 20px 0 20px;
+			height: 35px;
+			background-color: #784BA0;
+			border-radius: 30px;
+			color: wheat;
+			font-weight: 700;
+		}
+	</style>
+	<title>Meus Planos</title>
+</head>
+
+<body>
+	<div class="cabecalho">
+		<h1>PagRecorrente</h1>
+	</div>
+
+	<div class="container-plans">
+	</div>
+
+	<!-- Importação da biblioteca JQuery, uma facilitadora para escrita de Javascript -->
+	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+	<!-- Script da nossa aplicação web -->
+	<script>
+		
+		/* Para exibirmos a lista de planos, precisamos fazer uma requisição
+		HTTP do tipo GET para o nosso servidor na rota /getplans, que será 
+		equivalente a: http://localhost:3001/getplans
+		*/
+		$.get("/getplans", function (resultado) {
+
+			/* A requisição retorna um resultado em JSON com as informações
+			dos nossos planos, porem para trabalharmos com esses dados, precisamos
+			transormar o Json em um Objeto javascript, fazemos isso com JSON.parse() */
+			resultado = JSON.parse(resultado);
+
+			/* Precisamos percorrer o array preApprovalRequest que contém os nossos planos,
+			para cada item do array temos um objeto com as informações de um plano, para
+			percorrer utilizamos o método forEach, que é um for(i=0; i<10; i++)
+			simplificado.) */
+			resultado.preApprovalRequest.forEach(plan => {
+				/* Para cada item, iremos fazer uma inserção da div plan
+				no nosso container de planos com o método append. */
+				$(".container-plans").append(`
+			   		<div class="plan">
+						<h2 id="title">${plan.name}</h2>
+						<p id="description">${plan.details}</p>
+						<h3 id="price">${plan.amountPerPayment}</h3>
+					<button>ASSINAR</button>
+					</div>
+			   `);
+			});
+
+		});
+
+	</script>
+
+</body>
+
+
+</html>

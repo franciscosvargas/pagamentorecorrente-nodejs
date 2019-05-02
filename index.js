@@ -35,9 +35,23 @@ O outro parâmetro é uma arrow function que recebe req e res.
 req será o parâmetro que usaremos para tratar a informação referente
 à requisição feita e res quanto a resposta que queremos dar ao cliente.
 
-Usando res.send() enviamos uma resposta para o cliente.*/
+Usando res.sendFile() enviamos um arquivo como resposta para o cliente.*/
 express.get('/', (req, res) => {
-    res.send('Hello World');
+    res.sendFile(__dirname + '/views/index.html');
+});
+
+/* Devemos abrir uma porta get para receber as requisições da nossa
+aplicação web quando for preciso obter a lista de planos, é similar 
+ao passo anterior, só adicionamos o nome da rota após a /.
+
+Assim poderemos receber requisições a partir do endereço:
+http://localhost:3001/getplans
+*/
+express.get('/getplans', async (req, res) => {
+    /* Enviaremos a resposta em formato JSON que conterá
+    o resultado da chamada do método getPlans() do nosso
+    controller de planos. */
+    res.json(await plan.getPlans());
 });
 
 /* Faz com que os servidor fique escutando requisições HTTP através
