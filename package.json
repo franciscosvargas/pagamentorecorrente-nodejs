@@ -1,0 +1,15 @@
+{
+  "name": "pagamentorecorrente-nodejs",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js"
+  },
+  "repository": "https://github.com/franciscosvargas/pagamentorecorrente-nodejs.git",
+  "author": "Francisco Alisson Vargas <falisson.sv@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.4",
+    "nodemon": "^1.19.0"
+  }
+}
