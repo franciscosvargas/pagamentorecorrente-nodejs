@@ -8,11 +8,22 @@ const express = require('express')();
 /* Para manipular as ações da nossa conta PagSeguro devemos
 importar a classe criada no arquivo account.js criado na
 pasta controllers. */
-const account = require('./controllers/account.js');
+const account = require('./controllers/account');
+
+/* Para manipular a classe que controla as ações referentes aos planos
+devemos importar a classe criada no arquivo plan.js criado na
+pasta controllers. */
+const plan = require('./controllers/plan')
 
 /* Antes de realizarmos qualquer ação devemos autenticar a nossa conta
 PagSeguro para que seja possível criar e manipular os planos. */
 account.authentication();
+
+/* Para criar um novo plano devemos instanciar o metodo create da nossa
+classe plan. 
+
+plan.create();
+*/
 
 /* A chamada express.get sempre será usada quando quisermos chamar 
 uma nova rota de acesso GET á um determinado endereço da nossa

@@ -12,7 +12,7 @@ const request = require('request');
 do PagSeguro devemos criar uma classe, uma forma organizada e fácil
 para chamarmos métodos. */
 
-class account {
+class accountController {
 
 	/* O método authentication() ficará responsável pela autenticação
 	da nossa aplicação no servidor do PagSeguro através de uma conexão
@@ -46,4 +46,4 @@ class account {
 
 /* Para que nossa classe seja acessada em outro arquivo
 ela deve ser exportada como uma nova instância. */
-module.exports = new account();
+module.exports = new accountController();
