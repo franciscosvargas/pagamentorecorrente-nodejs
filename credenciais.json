@@ -2,8 +2,11 @@
     "email": "INSIRA AQUI O EMAIL DA SUA CONTA PAGSEGURO",
     "token_sandbox": "INSIRA AQUI O SEU TOKEN SANDBOX (VERSÃO DE TESTE)",
     "sandbox_auth": "https://ws.sandbox.pagseguro.uol.com.br/",
-    "sandbox_preaprovals": "https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request",
+    "sandbox_preaprovals_request": "https://ws.sandbox.pagseguro.uol.com.br/pre-approvals/request",
+    "sandbox_preaprovals": "https://ws.sandbox.pagseguro.uol.com.br/pre-approvals",
+    "sandbox_session":" https://ws.sandbox.pagseguro.uol.com.br/v2/sessions/",
     "url_endpoint": "application/x-www-form-urlencoded;charset=ISO-8859-1",
     "json_endpoint": "application/json;charset=ISO-8859-1",
+    "xml_endpoint": "application/xml;charset=ISO-8859-1",
     "accept_json": "application/vnd.pagseguro.com.br.v3+json;charset=ISO-8859-1"
 }

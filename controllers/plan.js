@@ -1,6 +1,6 @@
 const request = require("request");
 
-const credentials = require('../credenciaisofc.json');
+const credentials = require('../credenciais.json');
 
 class planController {
 	/* Método a ser chamado toda vez que queira criar um novo plano */
@@ -14,7 +14,7 @@ class planController {
 		*/
 
 		const options = {
-			url: `${credentials.sandbox_preaprovals}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+			url: `${credentials.sandbox_preaprovals_request}?email=${credentials.email}&token=${credentials.token_sandbox}`,
 
 			// Url a usada durante a conexão 
 			method: 'POST', // Método de conexão HTTP
@@ -91,7 +91,7 @@ class planController {
 		*/
 
 		const options = {
-			url: `${credentials.sandbox_preaprovals}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
+			url: `${credentials.sandbox_preaprovals_request}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
 
 			/* Estamos utilizando o metodo SandBox para execução da aplicação
 			em ambiente de testes, para produção, devemos usar uma url e token
@@ -112,6 +112,45 @@ class planController {
 			request(options, function (error, response, body) {
 				if (error) throw new Error(error);
 	
+				resolve(body);
+			});
+		});
+
+	}
+
+	/* Método chamado sempre que houver uma nova adesão de usuário à um plano */
+	adherence(data) {
+
+		data = JSON.stringify(data);
+
+		/* Para realizar a conexão precisamos definir os parâmetros da mesma,
+		o PagSeguro exige além da url válida, headers que definirão o tipo de envio
+		e a tipo de resposta que iremos receber. 
+		
+		Os tipos de headers podem ser conferidos na documentação disponibilizada no readme.
+		*/
+		const options = {
+			url: `${credentials.sandbox_preaprovals}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
+
+			/* Estamos utilizando o metodo SandBox para execução da aplicação
+			em ambiente de testes, para produção, devemos usar uma url e token
+			diferente da sandbox. FIQUE ATENTO!*/
+
+			// Url a usada durante a conexão 
+			method: 'POST', // Método de conexão HTTP
+			body: data,
+			headers: {
+				'Content-Type': credentials.json_endpoint, // Indica que estamos enviando os dados em formato JSON
+				'Accept': credentials.accept_json // Indica que queremos receber a resposta em formato JSON
+			},
+			json: true
+		}
+
+		/* Iremos retornar uma Promise que será resolvida caso tenhamos obtido 
+		os nossos planos com sucesso. */
+		return new Promise((resolve, reject) => {
+			request(options, function (error, response, body) {
+				if (body.error) reject(error);
 				resolve(body);
 			});
 		});

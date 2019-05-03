@@ -10,6 +10,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+	<link rel="stylesheet" href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css">
 	<style type="text/css">
 		html {
 			height: 100%;
@@ -102,16 +103,27 @@
 	<div class="container-plans">
 	</div>
 
+	<!-- Importação da biblioteca Checkout Transparente do PagSeguro, para obter o token do cartão de crédito-->
+	<script type="text/javascript"
+		src="https://stc.pagseguro.uol.com.br/pagseguro/api/v2/checkout/pagseguro.directpayment.js"></script>
+	<!-- Importação da biblioteca Material Desing Components, que traz componentes visuais. -->
+	<script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
 	<!-- Importação da biblioteca JQuery, uma facilitadora para escrita de Javascript -->
 	<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
 	<!-- Script da nossa aplicação web -->
 	<script>
-		
+
+		const credentials = {
+			brand: "",
+			token: "",
+			hash: ""
+		};
 		/* Para exibirmos a lista de planos, precisamos fazer uma requisição
 		HTTP do tipo GET para o nosso servidor na rota /getplans, que será 
 		equivalente a: http://localhost:3001/getplans
 		*/
-		$.get("/getplans", function (resultado) {
+
+		$.get("/getplans", (resultado) => {
 
 			/* A requisição retorna um resultado em JSON com as informações
 			dos nossos planos, porem para trabalharmos com esses dados, precisamos
@@ -126,16 +138,304 @@
 				/* Para cada item, iremos fazer uma inserção da div plan
 				no nosso container de planos com o método append. */
 				$(".container-plans").append(`
-			   		<div class="plan">
+					<div class="plan">
 						<h2 id="title">${plan.name}</h2>
 						<p id="description">${plan.details}</p>
 						<h3 id="price">${plan.amountPerPayment}</h3>
-					<button>ASSINAR</button>
+					<button onclick="dialogPayment('${plan.code}', '${plan.amountPerPayment}', '${plan.name}')">ASSINAR</button>
 					</div>
-			   `);
+				`);
 			});
 
 		});
+
+		/* Faz uma requisição GET para o servidor pedindo uma chave de seção */
+		$.get("/getsession", async (resultado) => {
+			await PagSeguroDirectPayment.setSessionId(resultado);
+			await getHash();
+		});
+
+		/* Função que abre um dialog para inserção das informações do cliente,
+		nesse caso, estamos passando pedindo apenas os dados do cartão para
+		gerar um token, mas você pode também enviar as informações como nome,
+		email e cpf. */
+		function dialogPayment(code, price, name) {
+			$("body").append(`
+				<div id="dialog"  class="mdc-dialog" role="alertdialog" aria-modal="true">
+				<div class="mdc-dialog__container">
+					<div class="mdc-dialog__surface">
+						<p style="margin: 10px auto 0 auto; ">Ambiente protegido por:</p>
+						<img style="width: 150px; height: 120px; margin: auto;"src="https://meetportugaltours.com/wp-content/uploads/2018/02/logo-pagseguro.png"></img>
+							
+						<div class="mdc-dialog__content" >
+							<form action="/adherence" method="POST" id="paymentinfo">
+								<h3 class="mdc-dialog__subtitle">Dados Pessoais</h3>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="name" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Nome Completo</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="email" name="email" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Email</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="phone" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Telefone</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="cpf" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">CPF</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<h3 class="mdc-dialog__subtitle">Endereço</h3>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="address" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Endereço</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="number" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Número</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="bairro" class="mdc-text-field__input"  required>
+									<label class="mdc-floating-label">Bairro</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="complement" class="mdc-text-field__input"required>
+									<label class="mdc-floating-label">Complemento</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="city" class="mdc-text-field__input"  required>
+									<label class="mdc-floating-label">Cidade</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="uf" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Estado/UF (ex: SP)</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="number" name="cep" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">CEP (somente números)</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<h3 class="mdc-dialog__subtitle">Cartão de Crédito</h3>
+								<div id="bandeira"></div>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="number" onblur="getBrand(this.value)" name="cardnumber" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Número do cartão de crédito</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="number" name="cvv" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Código de Segurança</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="number" name="month" class="mdc-text-field__input"  required>
+									<label class="mdc-floating-label">Mês de Vencimento: (ex: 02)</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="number" onblur="getToken();" name="year" class="mdc-text-field__input"  required>
+									<label class="mdc-floating-label">Ano de Vencimento: (ex: 2026)</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="ownername" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Nome impresso no cartão</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="date" name="birthday" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Data nascimento do propietário do cartão</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="phone2" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">Telefone do propietário do cartão</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div class="mdc-text-field" style="width: 100%;" data-mdc-auto-init="MDCTextField">
+									<input type="text" name="cpf2" class="mdc-text-field__input" required>
+									<label class="mdc-floating-label">CPF do propietário do cartão</label>
+									<div class="mdc-line-ripple"></div>
+								</div>
+								<br><br>
+								<div>Ao clicar em pagar você autoriza a cobrança<br> mensal de <strong>R$${price}</strong> referente a <strong>${name}</strong>.</div>
+										
+							</form>
+								</div>
+								<footer class="mdc-dialog__actions">
+									<button  class="mdc-button mdc-dialog__button" data-mdc-dialog-action="closed" >
+										<span class="mdc-button__label">Cancelar</span>
+									</button>
+									<button onclick="fetchPayment('${code}')" id="btnpagar"  class="mdc-button mdc-dialog__button" >
+										<span class="mdc-button__label">Pagar</span>
+									</button>
+								</footer>
+							</div>
+						
+					</div>
+					<div class="mdc-dialog__scrim"></div>
+				</div>
+			`);
+
+			/* Métodos de gerenciamento do dialog. */
+			window.mdc.autoInit(document, () => { });
+			dialog = mdc.dialog.MDCDialog.attachTo(document.querySelector("#dialog"));
+			dialog.open();
+			$('#btnpagar').focus();
+		}
+
+		/* Para conseguirmos o token do cartão de crédito precisamos da marca do cartão
+		obtida atráves dessa função. */
+		function getBrand(cardnumber) {
+			PagSeguroDirectPayment.getBrand({
+				cardBin: cardnumber.substring(0, 6),
+				success: function (response) {
+					credentials.brand = response.brand.name;
+				},
+				error: function (response) {
+					//tratamento do erro
+				},
+				complete: function (response) {
+					//tratamento comum para todas chamadas
+				}
+			});
+		}
+
+		/* Função que obtém o token do cartão de crédito a ser enviado para o servidor. */
+		function getToken() {
+			/* Gera um token do cartão de crédito para enviar ao servidor
+			com base nas informações passdas no dialog. */
+			PagSeguroDirectPayment.createCardToken({
+				cardNumber: $("[name=cardnumber]").val(), // Número do cartão de crédito
+				brand: credentials.brand, // Bandeira do cartão
+				cvv: $("[name=cvv]").val(), // CVV do cartão
+				expirationMonth: $("[name=month]").val(), // Mês da expiração do cartão
+				expirationYear: $("[name=year]").val(), // Ano da expiração do cartão, é necessário os 4 dígitos.
+				success: async function (response) {
+					credentials.token = response.card.token;
+				},
+				error: function (response) {
+					console.log(response);
+				},
+				complete: function (response) {
+					// Callback para todas chamadas.
+				}
+			});
+		}
+
+		function getHash() {
+			/* Cria uma Hash de segurança para a transação */
+			PagSeguroDirectPayment.onSenderHashReady(function (response) {
+				if (response.status == 'error') {
+					console.log(response.message);
+					return false;
+				}
+
+				credentials.hash = response.senderHash;
+			});
+		}
+		/* Função que reúne os dados inseridos, credenciais e faz o envio para o servidor. */
+		async function fetchPayment(code) {
+
+			//Verifica se não há um marca de cartão definida, se não, tenta definir uma.
+			if (credentials.brand == null) {
+				await getBrand($("[name=cardnumber]").val());
+				await getToken();
+			}
+
+			/* Verifica se não há um token, se não, busca por um. */
+			if (credentials.token == null) {
+				getToken();
+			}
+
+			/* Objeto a ser enviado ao servidor com todos os dados necessários 
+			reúnidos para a adesão do plano com base na documentação do PagSeguro. */
+			const data = {
+				"plan": code,
+				"sender": {
+					"name": $("[name=name]").val(),
+					"email": $("[name=email]").val(),
+					"hash": credentials.hash,
+					"phone": {
+						"areaCode": $("[name=phone]").val().substring(0, 2),
+						"number": $("[name=phone]").val().substring(2, 11)
+					},
+					"address": {
+						"street": $("[name=address]").val(),
+						"number": $("[name=number]").val(),
+						"complement": $("[name=complement]").val(),
+						"district": $("[name=bairro]").val(),
+						"city": $("[name=city]").val(),
+						"state": $("[name=uf]").val(),
+						"country": "BRA",
+						"postalCode": $("[name=cep]").val()
+					},
+					"documents": [{
+						"type": "CPF",
+						"value": $("[name=cpf]").val()
+					}]
+				},
+				"paymentMethod": {
+					"type": "CREDITCARD",
+					"creditCard": {
+						"token": credentials.token,
+						"holder": {
+							"name": $("[name=ownername]").val(),
+							"birthDate": $("[name=birthday]").val().split('-').reverse().join('/'),
+							"documents": [{
+								"type": "CPF",
+								"value": $("[name=cpf2]").val()
+							}],
+							"phone": {
+								"areaCode": $("[name=phone2]").val().substring(0, 2),
+								"number": $("[name=phone2]").val().substring(2, 11)
+							}
+						},
+					}
+				}
+
+			}
+
+			// Faz o envio dos dados para o servidor
+			$.post('/adherence', data, function (msg) {
+				dialog.close();
+				if (msg == "criado") {
+					alert("plano criado");
+				} else {
+					alert("algum erro aconteceu");
+				}
+			})
+		}
+
 
 	</script>
 

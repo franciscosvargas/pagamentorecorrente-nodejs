@@ -3,6 +3,8 @@ Token, email, endpoints de apis. Usaremos um arquivo Json e iremos
 instancia-lo abaixo. */
 const credentials = require('../credenciais.json')
 
+const parseString = require('xml2js').parseString;
+
 /* A depedência request é uma facilitadora na hora de realizar
 requisições HTTP, como iremos usar ela nesse arquivo, devemos
 instancia-la abaixo. */
@@ -23,7 +25,7 @@ class accountController {
 			url: credentials.sandbox_auth, // Url a usada durante a conexão 
 			method: 'GET', // Método de conexão HTTP
 			headers: {
-				'Content-Type': credentials.url_endpoint, // Forma de enviar os dados na requisição
+				'Content-Type': credentials.url_endpoint, // Indica que iremos enviar os dados na url
 				'email': credentials.email, // Email da sua conta PagSeguro
 				'token-sandbox': credentials.token_sandbox, // Token da sua conta pagseguro
 
@@ -41,6 +43,39 @@ class accountController {
 			console.log("\nUsuário autenticado com sucesso!");
 		});
 	}
+
+
+	/* Método para criação de uma sessão de pagamento */
+	async createSession() {
+		/* Objeto que define os parâmetros de conexão*/
+		const options = {
+			url: `${credentials.sandbox_session}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+			/* Url da conexão */
+			method: 'POST', // Tipo de requisição
+			headers: {
+				'Content-Type': credentials.url_endpoint // Indica que iremos enviar os dados na url
+			}
+		}
+
+		/* Iremos retornar uma Promise que será resolvida caso tenhamos obtido 
+		um código de sessão com sucesso */
+		return new Promise((resolve) => {
+			/* Faz a requisição ao servidor PagSeguro pedindo uma nova chave
+			de sessão. */
+			request(options, function (error, response, body) {
+				if (error) throw new Error(error);
+				
+				/* Usa o método parseString para formatar a resposta de XML para JSON */
+				parseString(body, function (err, result) {
+					// Retorna a chave de sessão
+					resolve(result.session.id[0])
+				});
+			});
+		})
+		
+	}
+
+	
 }
 
 
