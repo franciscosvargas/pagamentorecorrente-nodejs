@@ -121,8 +121,6 @@ class planController {
 	/* Método chamado sempre que houver uma nova adesão de usuário à um plano */
 	adherence(data) {
 
-		data = JSON.stringify(data);
-
 		/* Para realizar a conexão precisamos definir os parâmetros da mesma,
 		o PagSeguro exige além da url válida, headers que definirão o tipo de envio
 		e a tipo de resposta que iremos receber. 
@@ -130,7 +128,7 @@ class planController {
 		Os tipos de headers podem ser conferidos na documentação disponibilizada no readme.
 		*/
 		const options = {
-			url: `${credentials.preapprovals}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
+			url: `${credentials.preapprovals}?email=${credentials.email}&token=${credentials.token_sandbox}`,
 
 			/* Estamos utilizando o metodo SandBox para execução da aplicação
 			em ambiente de testes, para produção, devemos usar uma url e token
@@ -150,10 +148,8 @@ class planController {
 		os nossos planos com sucesso. */
 		return new Promise((resolve, reject) => {
 			request(options, function (error, response, body) {
-				if (body.error) {
-					console.log(body)
-					reject(body.error);
-				}
+				if (body.error) reject(body.error);					
+				
 				console.log(body);
 				resolve(body);
 			});
