@@ -23,7 +23,7 @@ const account = require('./controllers/account');
 /* Para manipular a classe que controla as ações referentes aos planos
 devemos importar a classe criada no arquivo plan.js criado na
 pasta controllers. */
-const plan = require('./controllers/plan')
+const plan = require('./controllers/plan');
 
 /* Antes de realizarmos qualquer ação devemos autenticar a nossa conta
 PagSeguro para que seja possível criar e manipular os planos. */
@@ -34,7 +34,6 @@ classe plan.
 
 plan.create();
 */
-
 
 /* A chamada express.get sempre será usada quando quisermos chamar 
 uma nova rota de acesso GET á um determinado endereço da nossa
@@ -96,6 +95,7 @@ app.post('/adherence', async (req, res) => {
         await plan.adherence(req.body);
         res.send("criado");
     } catch (e) {
+        console.log(e);
         res.send(e);
     }
 });

@@ -166,7 +166,7 @@
 					<div class="mdc-dialog__surface">
 						<p style="margin: 10px auto 0 auto; ">Ambiente protegido por:</p>
 						<img style="width: 150px; height: 120px; margin: auto;"src="https://meetportugaltours.com/wp-content/uploads/2018/02/logo-pagseguro.png"></img>
-							
+						
 						<div class="mdc-dialog__content" >
 							<form action="/adherence" method="POST" id="paymentinfo">
 								<h3 class="mdc-dialog__subtitle">Dados Pessoais</h3>
@@ -359,7 +359,7 @@
 					console.log(response.message);
 					return false;
 				}
-
+				console.log(response.senderHash);
 				credentials.hash = response.senderHash;
 			});
 		}

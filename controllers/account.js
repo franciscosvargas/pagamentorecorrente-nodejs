@@ -1,7 +1,7 @@
 /* Para armazenar os dados gerados no nosso painel do PagSeguro como:
 Token, email, endpoints de apis. Usaremos um arquivo Json e iremos 
 instancia-lo abaixo. */
-const credentials = require('../credenciais.json')
+const credentials = require('../credenciaisofc.json')
 
 const parseString = require('xml2js').parseString;
 
@@ -22,7 +22,7 @@ class accountController {
 	authentication() {
 		/* Objeto que define os parâmetros de conexão*/
 		const options = {
-			url: credentials.sandbox_auth, // Url a usada durante a conexão 
+			url: credentials.auth, // Url a usada durante a conexão 
 			method: 'GET', // Método de conexão HTTP
 			headers: {
 				'Content-Type': credentials.url_endpoint, // Indica que iremos enviar os dados na url
@@ -49,7 +49,7 @@ class accountController {
 	async createSession() {
 		/* Objeto que define os parâmetros de conexão*/
 		const options = {
-			url: `${credentials.sandbox_session}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+			url: `${credentials.session}?email=${credentials.email}&token=${credentials.token_sandbox}`,
 			/* Url da conexão */
 			method: 'POST', // Tipo de requisição
 			headers: {

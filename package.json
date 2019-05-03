@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "start": "node index.js"
   },
   "repository": "https://github.com/franciscosvargas/pagamentorecorrente-nodejs.git",
   "author": "Francisco Alisson Vargas <falisson.sv@gmail.com>",
@@ -12,6 +13,7 @@
     "body-parser": "^1.19.0",
     "express": "^4.16.4",
     "nodemon": "^1.19.0",
+    "request": "^2.88.0",
     "xml2js": "^0.4.19"
   }
 }

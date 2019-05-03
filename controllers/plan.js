@@ -1,6 +1,6 @@
 const request = require("request");
 
-const credentials = require('../credenciais.json');
+const credentials = require('../credenciaisofc.json');
 
 class planController {
 	/* Método a ser chamado toda vez que queira criar um novo plano */
@@ -14,7 +14,7 @@ class planController {
 		*/
 
 		const options = {
-			url: `${credentials.sandbox_preaprovals_request}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+			url: `${credentials.preapprovals_request}?email=${credentials.email}&token=${credentials.token_sandbox}`,
 
 			// Url a usada durante a conexão 
 			method: 'POST', // Método de conexão HTTP
@@ -91,7 +91,7 @@ class planController {
 		*/
 
 		const options = {
-			url: `${credentials.sandbox_preaprovals_request}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
+			url: `${credentials.preapprovals_request}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
 
 			/* Estamos utilizando o metodo SandBox para execução da aplicação
 			em ambiente de testes, para produção, devemos usar uma url e token
@@ -111,7 +111,7 @@ class planController {
 		return new Promise((resolve, reject) => {
 			request(options, function (error, response, body) {
 				if (error) throw new Error(error);
-	
+
 				resolve(body);
 			});
 		});
@@ -130,7 +130,7 @@ class planController {
 		Os tipos de headers podem ser conferidos na documentação disponibilizada no readme.
 		*/
 		const options = {
-			url: `${credentials.sandbox_preaprovals}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
+			url: `${credentials.preapprovals}?email=${credentials.email}&token=${credentials.token_sandbox}&status=ALL&startCreationDate=${data.startCreationDate}&endCreationDate=${data.endCreationDate}`,
 
 			/* Estamos utilizando o metodo SandBox para execução da aplicação
 			em ambiente de testes, para produção, devemos usar uma url e token
@@ -150,11 +150,76 @@ class planController {
 		os nossos planos com sucesso. */
 		return new Promise((resolve, reject) => {
 			request(options, function (error, response, body) {
-				if (body.error) reject(error);
+				if (body.error) {
+					console.log(body)
+					reject(body.error);
+				}
+				console.log(body);
 				resolve(body);
 			});
 		});
 
+	}
+
+	/* Método a ser chamado sempre que for necessário realizar uma cobrança manual */
+	manualCharging(/* body */) {
+		const options = {
+			url: `${credentials.preapprovals_payment}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+
+			/* Estamos utilizando o metodo SandBox para execução da aplicação
+			em ambiente de testes, para produção, devemos usar uma url e token
+			diferente da sandbox. FIQUE ATENTO!*/
+
+			// Url a usada durante a conexão 
+			method: 'POST', // Método de conexão HTTP
+			headers: {
+				'Content-Type': credentials.json_endpoint, // Forma de enviar os dados pela URL
+				'Accept': credentials.accept_json // Indica que queremos receber a resposta em formato JSON
+			},
+
+			/* O corpo da mensagem pode e deve ser recebido via parâmetro, use esse corpo
+			apenas como formato do objeto a ser utilizado durante a cobrança. */
+
+			body: {
+				preApprovalCode: "", // Código de adesão criado no momento de adesão do cliente.
+				senderHash: "", // Gerado  por meio do JavaScript do PagSeguro na página cliente.
+				items: [{
+					id: "", // Código do plano
+					description: "", // Descrição do plano
+					quantity: 1, // Quantidade
+					amount: "1.00" // Preço cobrado no plano
+				}]
+			},
+			json: true
+
+		}
+
+		request(options, function (error, response, body) {
+			if (error) throw new Error(error);
+
+			console.log(body);
+		});
+	}
+
+	cancelAdherence(preApprovalCode) {
+		const options = {
+			url: `${credentials.preapprovals}/${preApprovalCode}/cancel/?email=${credentials.email}&token=${credentials.token_sandbox}`,
+
+			/* Estamos utilizando o metodo SandBox para execução da aplicação
+			em ambiente de testes, para produção, devemos usar uma url e token
+			diferente da sandbox. FIQUE ATENTO!*/
+
+			// Url a usada durante a conexão 
+			method: 'PUT',
+			headers: { 'Accept': credentials.accept_json }// Método de conexão HTTP
+
+		}
+
+		request(options, function (error, response, body) {
+			if (error) throw new Error(error);
+
+			console.log(body);
+		});
 	}
 
 }
