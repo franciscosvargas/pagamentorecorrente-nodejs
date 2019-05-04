@@ -2,6 +2,9 @@ const request = require("request");
 
 const credentials = require('../credenciaisofc.json');
 
+
+const parseString = require('xml2js').parseString;
+
 class planController {
 	/* Método a ser chamado toda vez que queira criar um novo plano */
 	create(/* body */) {
@@ -118,9 +121,40 @@ class planController {
 
 	}
 
+	/* Método para criação de uma sessão de pagamento */
+	async createSession() {
+		/* Objeto que define os parâmetros de conexão*/
+		const options = {
+			url: `${credentials.session}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+			/* Url da conexão */
+			method: 'POST', // Tipo de requisição
+			headers: {
+				'Content-Type': credentials.url_endpoint // Indica que iremos enviar os dados na url
+			}
+		}
+
+		/* Iremos retornar uma Promise que será resolvida caso tenhamos obtido 
+		um código de sessão com sucesso */
+		return new Promise((resolve) => {
+			/* Faz a requisição ao servidor PagSeguro pedindo uma nova chave
+			de sessão. */
+			request(options, function (error, response, body) {
+				if (error) throw new Error(error);
+				
+				/* Usa o método parseString para formatar a resposta de XML para JSON */
+				parseString(body, function (err, result) {
+					// Retorna a chave de sessão
+					resolve(result.session.id[0])
+				});
+			});
+		})
+		
+	}
+
 	/* Método chamado sempre que houver uma nova adesão de usuário à um plano */
 	adherence(data) {
 
+		console.log(data)
 		/* Para realizar a conexão precisamos definir os parâmetros da mesma,
 		o PagSeguro exige além da url válida, headers que definirão o tipo de envio
 		e a tipo de resposta que iremos receber. 

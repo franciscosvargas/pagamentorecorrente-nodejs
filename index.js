@@ -14,20 +14,11 @@ Sem ela, não conseguimos receber o body de uma requisição.
 const bodyParser = require('body-parser');  
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
- 
-/* Para manipular as ações da nossa conta PagSeguro devemos
-importar a classe criada no arquivo account.js criado na
-pasta controllers. */
-const account = require('./controllers/account');
 
 /* Para manipular a classe que controla as ações referentes aos planos
 devemos importar a classe criada no arquivo plan.js criado na
 pasta controllers. */
 const plan = require('./controllers/plan');
-
-/* Antes de realizarmos qualquer ação devemos autenticar a nossa conta
-PagSeguro para que seja possível criar e manipular os planos. */
-account.authentication();
 
 /* Para criar um novo plano devemos instanciar o metodo create da nossa
 classe plan. 
@@ -64,7 +55,6 @@ app.get('/getplans', async (req, res) => {
     res.json(await plan.getPlans());
 });
 
-
 /* Devemos abrir uma porta get para receber as requisições da nossa
 aplicação web quando for preciso obter a uma nova sessão de pagamento,
 é similar ao passo anterior, só adicionamos o nome da rota após a /.
@@ -77,7 +67,7 @@ app.get('/getsession', async (req, res) => {
     /* Enviaremos a resposta  que conterá
     o resultado da chamada do método createSession() do nosso
     controller de conta. */
-    res.send(await account.createSession());
+    res.send(await plan.createSession());
 });
 
 

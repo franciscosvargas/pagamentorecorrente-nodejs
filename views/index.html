@@ -426,14 +426,17 @@
 			}
 
 			// Faz o envio dos dados para o servidor
-			$.post('/adherence', data, function (msg) {
-				dialog.close();
-				if (msg == "criado") {
-					alert("plano criado");
-				} else {
-					alert("algum erro aconteceu");
+			$.ajax({
+				url: '/adherence',
+				type: 'POST',
+				data: JSON.stringify(data),
+				contentType: 'application/json; charset=utf-8',
+				dataType: 'json',
+				success: function (msg) {
+					console.log(msg);
 				}
-			})
+			});
+
 		}
 
 
