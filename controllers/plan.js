@@ -1,7 +1,6 @@
 const request = require("request");
 
-const credentials = require('../credenciaisofc.json');
-
+const credentials = require('../credenciais.json');
 
 const parseString = require('xml2js').parseString;
 
@@ -140,7 +139,7 @@ class planController {
 			de sessão. */
 			request(options, function (error, response, body) {
 				if (error) throw new Error(error);
-				
+
 				/* Usa o método parseString para formatar a resposta de XML para JSON */
 				parseString(body, function (err, result) {
 					// Retorna a chave de sessão
@@ -148,7 +147,7 @@ class planController {
 				});
 			});
 		})
-		
+
 	}
 
 	/* Método chamado sempre que houver uma nova adesão de usuário à um plano */
@@ -182,8 +181,7 @@ class planController {
 		os nossos planos com sucesso. */
 		return new Promise((resolve, reject) => {
 			request(options, function (error, response, body) {
-				if (body.error) reject(body.error);					
-				
+				if (error) reject(error);
 				console.log(body);
 				resolve(body);
 			});
@@ -250,6 +248,39 @@ class planController {
 
 			console.log(body);
 		});
+	}
+
+	/* Método a ser chamado sempre que for necessário realizar uma consulta ao estado da
+	transação com base na notificação recebida. */
+	checkNotification(notificationCode) {
+		const options = {
+			url: `${credentials.notification_url}/${notificationCode}?email=${credentials.email}&token=${credentials.token_sandbox}`,
+
+			/* Estamos utilizando o metodo SandBox para execução da aplicação
+			em ambiente de testes, para produção, devemos usar uma url e token
+			diferente da sandbox. FIQUE ATENTO!*/
+
+			// Url a usada durante a conexão 
+			method: 'GET',
+			headers: {
+				'Content-Type': credentials.url_endpoint,
+			}
+		}
+
+		
+		return new Promise((resolve) => {
+			/* Faz a requisição GET para o servidor da PagsSeguro
+			pedindo as informações da transação. */
+			request(options, function (error, response, body) {
+				if (error) throw new Error(error);
+				/* Transforma a resposta de XML para JSON */
+				parseString(body, async function (err, result) {
+					resolve(result);
+				});
+			});
+		});
+
+
 	}
 
 }

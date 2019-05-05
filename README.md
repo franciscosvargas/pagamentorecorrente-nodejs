@@ -47,10 +47,8 @@ Index.js é o arquivo principal da nossa aplicação, onde guarda a configuraç�
 Arquivo JSON que guarda as credenciais e URLS obrigatórias para conexão com o PagSeguro.
 > É importante ler a seção Conta PagSeguro e Credenciais logo abaixo para entender a organização do arquivo.
 
-#### controllers/account.js
-O account.js é o um arquivo controlador das informações referentes a sua conta PagSeguro. É responsável principalmente pela autenticação da aplicação, com o servidor da UOL.
 #### controllers/plan.js
-O plan.js também é um arquivo controlador, ele é o responsável pelas informações dos planos existentes ou que ainda serão criados.
+O plan.js é um arquivo controlador, ele é o responsável por organizar e gerenciar as informações dos planos existentes ou que ainda serão criados.
 
 ### Lado Cliente
 #### views/index.html

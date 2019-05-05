@@ -77,7 +77,7 @@ aplicação web quando for preciso fazer uma adesão à um plano.
 Nessa requisição usamos parâmetros na rota após as barras.
 
 Assim poderemos receber requisições a partir do endereço:
-http://localhost:3001//adherence/tokenqualquer/codequalquer
+http://localhost:3001/adherence/tokenqualquer/codequalquer
 */
 
 app.post('/adherence', async (req, res) => {
@@ -87,6 +87,26 @@ app.post('/adherence', async (req, res) => {
     } catch (e) {
         console.log(e);
         res.send(e);
+    }
+});
+
+
+/* Devemos abrir uma porta POST para receber notificações
+das mudanças de estado da assinatura de um plano.
+
+Nessa requisição usamos parâmetros na rota após as barras.
+
+Assim poderemos receber requisições a partir do endereço:
+*/
+
+app.post('/notification', async (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', 'https://sandbox.pagseguro.uol.com.br');
+    try {
+        console.log(await plan.checkNotification(req.body.notificationCode));
+        res.status(200);
+    } catch (e) {
+        console.log(e);
+        res.status(400);
     }
 });
 
