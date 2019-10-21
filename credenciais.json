@@ -8,7 +8,7 @@
     "notification_url": "https://ws.sandbox.pagseguro.uol.com.br/v2/transactions/notifications",
     "session":" https://ws.sandbox.pagseguro.uol.com.br/v2/sessions/",
     "url_endpoint": "application/x-www-form-urlencoded;charset=ISO-8859-1",
-    "json_endpoint": "application/json;charset=ISO-8859-1",
+    "json_endpoint": "application/json;charset=UTF-8",
     "xml_endpoint": "application/xml;charset=ISO-8859-1",
     "accept_json": "application/vnd.pagseguro.com.br.v3+json;charset=ISO-8859-1"
 }
